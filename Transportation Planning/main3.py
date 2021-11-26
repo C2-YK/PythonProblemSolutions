@@ -9,6 +9,7 @@ class Edge:
 
 class Node:
     def __init__(self, value, x, y):
+        self.visited = False
         self.edges = []
         self.value = value
         self.x = x
@@ -50,7 +51,7 @@ def resetDist():
             else:
                 dist[i].append(inf)
 
-def WFS(queue, start):
+def BFS(queue, start):
     global nodes
     while(len(queue)> 0):
         node = queue.pop(0)
@@ -93,32 +94,26 @@ resetDist()
 #compute shortest dist
 for i in range(n):
     queue.append(i)
-    WFS(queue, i)
+    BFS(queue, i)
 
 #if below max edges, find a new edge has the greatest different add it to the graph
 if(m < n * (n - 1) / 2):
     #find a edge to add
-    i = -1
-    j = -1
-    diff = 0
+    maxDiff = 0
     preSum = distSum()
     for u in range(n):
         for v in range(u+1, n, 1):
             if(dist[u][v]>getDist(u, v)):
-                #add the new edge
-                connect(u, v)
-                #recompute the shortest path
-                resetDist()
+                diff = 0
                 for i in range(n):
-                    queue.append(i)
-                    WFS(queue, i)
-                sum = distSum()
-                if(preSum - sum > diff):
-                    diff = preSum - sum
-                    i = u
-                    j = v
-                disconnect(u, v)
-    print(preSum - diff)
+                    for j in range(n):
+                        if(dist[i][j] > dist[i][u] + getDist(u, v) + dist[v][j]):
+                            print("i: ", i, "j: ", j, " = ", dist[i][j] - (dist[i][u] + getDist(u, v) + dist[v][j]))
+                            diff += dist[i][j] - (dist[i][u] + getDist(u, v) + dist[v][j])
+                if(diff > maxDiff):
+                    maxDiff = diff
+                
+    print(preSum - maxDiff)
 else:
     sum = distSum()
     print(sum)

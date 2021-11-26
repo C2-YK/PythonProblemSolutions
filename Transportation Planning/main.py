@@ -117,6 +117,7 @@ if(m < n * (n - 1) / 2):
                     diff = preSum - sum
                     i = u
                     j = v
+                print(sum)
                 disconnect(u, v)
     print(preSum - diff)
 else:
