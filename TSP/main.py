@@ -21,6 +21,7 @@ for i in range(0, n*n, n):
 answer = []
 memo = {((0,), 0):0} #visited, current : cost
 allVertex = set(range(n))
+queue = [((0,), 0)] #visited, curr
 
 def tsp(visited, curr):
     toVisit = allVertex.difference(set(visited))
@@ -43,10 +44,12 @@ def tsp(visited, curr):
         else:
             if next_cost < memo[(next_visited, next)]:
                 memo[(next_visited, next)] = next_cost
-        tsp(next_visited, next)
+        queue.append((next_visited, next))
 
 
 visited = (0,)
-tsp(visited, 0)
+while(queue):
+    visited, curr = queue.pop(0)
+    tsp(visited, curr)
 circlePath = tuple(list(i for i in range(n)) + [0])
 print(memo[circlePath, 0])
