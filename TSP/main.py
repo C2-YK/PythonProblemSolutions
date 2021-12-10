@@ -1,4 +1,6 @@
 #import file
+import sys
+sys.setrecursionlimit(15000)
 import fileinput
 inputMessage = ""
 
@@ -17,18 +19,34 @@ for i in range(0, n*n, n):
     index+=1
 
 answer = []
+memo = {((0,), 0):0} #visited, current : cost
+allVertex = set(range(n))
 
-def tsp(u, visited, cost, count):
-    if(count == n):
-            global answer
-            answer.append(matrix[u][0]+cost)
-            return
-    for i in range(len(visited)):
-        if(not visited[i]):
-            visited[i] = True
-            tsp(i, visited, cost+matrix[u][i], count+1)
-            visited[i] = False
+def tsp(visited, curr):
+    toVisit = allVertex.difference(set(visited))
+    cost = memo[(visited, curr)]
+    if(len(toVisit) == 0):
+        next = 0
+        next_visited = tuple(list(visited) + [next])
+        next_cost = cost + matrix[curr][next]
+        if(next_visited, next) not in memo:
+            memo[(next_visited, next)] = next_cost
+        else:
+            if next_cost < memo[(next_visited, next)]:
+                memo[(next_visited, next)] = next_cost
+        return
+    for next in toVisit:
+        next_visited = tuple(sorted(list(visited) + [next]))
+        next_cost = cost + matrix[curr][next]
+        if(next_visited, next) not in memo:
+            memo[(next_visited, next)] = next_cost
+        else:
+            if next_cost < memo[(next_visited, next)]:
+                memo[(next_visited, next)] = next_cost
+        tsp(next_visited, next)
 
-visited = [False for i in range(n)]     
-tsp(0, visited, 0, 1)
-print(min(answer))
+
+visited = (0,)
+tsp(visited, 0)
+circlePath = tuple(list(i for i in range(n)) + [0])
+print(memo[circlePath, 0])
